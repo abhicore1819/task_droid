@@ -5,7 +5,7 @@ export default function App() {
   return (
     // parent div
     <div className="min-h-screen space-y-5 bg-linear-to-br from-slate-100 via-blue-100 to-indigo-100 py-5 text-center">
-      <h1 className="text-blue-600 font-semibold text-2xl ">TaskDriod</h1>{" "}
+      <h1 className="text-blue-600 font-semibold text-2xl ">TaskDroid</h1>{" "}
       {/* app name */}
       <h1 className="text-slate-600">Stay organized and productive</h1>{" "}
       {/*  tagline */}
@@ -21,7 +21,7 @@ export default function App() {
           abhinav productions
         </h1>
       </div> */}
-      
+
       {/* founder featuring */}
     </div> // parent div
   );
