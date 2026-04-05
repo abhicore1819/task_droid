@@ -13,45 +13,35 @@ export default function Inputarea() {
     setTask(typed_Task);
   };
 
-  useEffect(() => {}, [taskcount]);
+  useEffect(() => {
+    if(task_list.length === 0){
+      setIs_task(false)
+    }
+  }, [task_list]);
 
-  const resetTaskList = () => {
-    console.log("task_list:-", task_list);
+  const SaveToLocalStorage = () => {
+    const updatedlist = [...task_list, task];
+    localStorage.setItem("Task", JSON.stringify(updatedlist));
   };
 
   useEffect(() => {
-    const localstorage_key = "Task";
-    try {
-      let localStorageDatalist = [];
-      for (let index = 1; index <= localStorage.length; index++) {
-        let localStoredData = localStorage.getItem(`${index} Task`);
-        localStorageDatalist.push(localStoredData);
-      }
-      console.log(localStorageDatalist);
-
-      if (localStorage.getItem("1 Task")) {
-        setTask_list(localStorageDatalist);
-        setIs_task(true);
-      } else {
-        console.log("no data found!");
-      }
-    } catch (error) {
-      console.log("Error occured:-", error);
+    if (localStorage.getItem("Task")) {
+      const FetchData = localStorage.getItem("Task");
+      const convert = JSON.parse(FetchData);
+      setIs_task(true);
+      setTask_list(convert);
     }
   }, []);
 
-  const Set_task = () => {
+  const AddTaskToUI = () => {
     try {
       if (task === "") {
-        console.log("enter valid input");
         set_emptyVal(true);
       } else {
         setTaskCount(taskcount + 1);
         setIs_task(true);
-        // setTask_list(true);
         setTask_list([...task_list, task]);
-        console.log("task added");
-        localStorage.setItem(`${taskcount} Task`, task);
+        SaveToLocalStorage();
       }
       setTask("");
     } catch (error) {
@@ -60,13 +50,18 @@ export default function Inputarea() {
   };
 
   const Deletetask = (index, value) => {
-    try {
-      console.log(`this is the data in the local storage to the corresponding ui listss item index:- ${localStorage.key(index)}`)
-      console.log(`ui list index:- ${index}, data:- ${value}`);
-    } catch (error) {
-      console.log(`Error occured:- ${error}`);
+      const local = localStorage.getItem(`Task`);
+      const ConvertObj = JSON.parse(local);
+
+      const FilteredList = ConvertObj.filter((_, delete_index) => {
+        return index !== delete_index;
+      });
+
+      const StoreFilteredList = JSON.stringify(FilteredList);
+      localStorage.setItem("Task", StoreFilteredList);
+      setTask_list(FilteredList);
     }
-  };
+  // };
 
   const EditTask = () => {};
 
@@ -90,7 +85,7 @@ export default function Inputarea() {
           />
           {/* btn + icon */}
           <div
-            onClick={Set_task}
+            onClick={AddTaskToUI}
             className="bg-blue-600 p-3 text-white font-semibold flex items-center justify-center w-28 rounded-2xl gap-2"
           >
             <Plus />
