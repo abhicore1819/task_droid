@@ -1,29 +1,45 @@
-import { Plus, Trash2Icon, PenIcon, Copy } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import {
+  Plus,
+  Trash2Icon,
+  PenIcon,
+  Copy,
+  ChevronsLeftIcon,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
 export default function Inputarea() {
-  Trash2Icon;
+  // ----- states -----
   const [istask, setIs_task] = useState(false);
+  const [hasedited, setHasEdited] = useState(false);
   const [task_list, setTask_list] = useState([]);
   const [empty_val, set_emptyVal] = useState(false);
   const [task, setTask] = useState("");
   const [taskcount, setTaskCount] = useState(1);
+  const [editindex, setEditedIndex] = useState();
+  // ----- states -----
 
+  //  updates the input's value on every change in the input
   const Handlechange = (event) => {
     let typed_Task = event.target.value;
     setTask(typed_Task);
   };
+  //  updates the input's value on every change in the input
 
+  // stops the list from being shown on ui when there are no tasks
   useEffect(() => {
-    if(task_list.length === 0){
-      setIs_task(false)
+    if (task_list.length === 0) {
+      setIs_task(false);
     }
   }, [task_list]);
+  // stops the list from being shown on ui when there are no tasks
 
+  // saves data to local storage
   const SaveToLocalStorage = () => {
     const updatedlist = [...task_list, task];
     localStorage.setItem("Task", JSON.stringify(updatedlist));
   };
+  // saves data to local storage
 
+  // manages the ui state through refreshes
   useEffect(() => {
     if (localStorage.getItem("Task")) {
       const FetchData = localStorage.getItem("Task");
@@ -32,17 +48,36 @@ export default function Inputarea() {
       setTask_list(convert);
     }
   }, []);
+  // manages the ui state through refreshes
 
+  //  adds the task to the ui
   const AddTaskToUI = () => {
     try {
-      if (task === "") {
-        set_emptyVal(true);
-      } else {
+      // stops empty value
+      if (task !== "" && hasedited !== true) {
         setTaskCount(taskcount + 1);
         setIs_task(true);
         setTask_list([...task_list, task]);
         SaveToLocalStorage();
+        set_emptyVal(false);
+        console.log("new task added");
       }
+
+      if (hasedited === true) {
+        const editedList = [...task_list];
+        console.log("this was an edit attempt");
+        editedList[editindex] = task;
+        console.log(editedList);
+        setTask_list(editedList);
+        const ConvertToJson = JSON.stringify(editedList);
+        localStorage.setItem("Task", ConvertToJson);
+        setHasEdited(false);
+      }
+
+      if (task === "") {
+        set_emptyVal(true);
+      }
+
       setTask("");
     } catch (error) {
       console.log(`Error occured:- ${error}`);
@@ -50,20 +85,28 @@ export default function Inputarea() {
   };
 
   const Deletetask = (index, value) => {
-      const local = localStorage.getItem(`Task`);
-      const ConvertObj = JSON.parse(local);
+    const local = localStorage.getItem(`Task`);
+    const ConvertObj = JSON.parse(local);
 
-      const FilteredList = ConvertObj.filter((_, delete_index) => {
-        return index !== delete_index;
-      });
+    const FilteredList = ConvertObj.filter((_, delete_index) => {
+      return index !== delete_index;
+    });
 
-      const StoreFilteredList = JSON.stringify(FilteredList);
-      localStorage.setItem("Task", StoreFilteredList);
-      setTask_list(FilteredList);
+    const StoreFilteredList = JSON.stringify(FilteredList);
+    localStorage.setItem("Task", StoreFilteredList);
+    setTask_list(FilteredList);
+  };
+
+  //  edits the tasks
+  const EditTask = (index, value) => {
+    try {
+      setTask(value);
+      setHasEdited(true);
+      setEditedIndex(index);
+    } catch (error) {
+      console.log(`Error occured:- ${error}`);
     }
-  // };
-
-  const EditTask = () => {};
+  };
 
   return (
     // contains the input, btn, and import mark option
@@ -129,11 +172,11 @@ export default function Inputarea() {
               {/* chekbox and task text */}
               {/* contains the tasks btn */}
               <div className=" cursor-pointer flex gap-2">
-                <div className="hover:bg-blue-50 rounded-lg transition ease-in duration-200 p-2">
-                  <PenIcon
-                    onClick={EditTask}
-                    className="text-blue-600 h-5 w-5 "
-                  />
+                <div
+                  onClick={() => EditTask(i, data)}
+                  className="hover:bg-blue-50 rounded-lg transition ease-in duration-200 p-2"
+                >
+                  <PenIcon className="text-blue-600 h-5 w-5 " />
                 </div>
                 <div className="hover:bg-blue-50 rounded-lg transition ease-in duration-200 p-2">
                   <Copy className="text-blue-600 h-5 w-5 " />
