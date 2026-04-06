@@ -97,6 +97,12 @@ export default function Inputarea() {
     setTask_list(FilteredList);
   };
 
+  const CopyTask = async (index, value) => {
+    const TextToCopy = task_list[index];
+    await navigator.clipboard.writeText(TextToCopy);
+    console.log("Copied")
+  };
+
   //  edits the tasks
   const EditTask = (index, value) => {
     try {
@@ -178,7 +184,10 @@ export default function Inputarea() {
                 >
                   <PenIcon className="text-blue-600 h-5 w-5 " />
                 </div>
-                <div className="hover:bg-blue-50 rounded-lg transition ease-in duration-200 p-2">
+                <div
+                  onClick={() => CopyTask(i, data)}
+                  className="hover:bg-blue-50 rounded-lg transition ease-in duration-200 p-2"
+                >
                   <Copy className="text-blue-600 h-5 w-5 " />
                 </div>
                 <div
